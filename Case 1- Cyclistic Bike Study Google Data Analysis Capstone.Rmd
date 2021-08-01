@@ -1,0 +1,341 @@
+---
+title: 'Case 1: Cyclistic Bike Study (Google Data Analysis Capstone)'
+author: "Aaron Lionel D'cruz"
+date: "7/30/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+The following case study is based on the case study "'Sophisticated, Clear, and Polished’: Divvy and Data Visualization" written by Kevin Hartman ([see link] (https://artscience.blog/home/divvy-dataviz-case-study)).  
+
+
+## Brief Company Profile
+
+Cyclistic is a bike-sharing organisation that manages an impressive fleet of more than 5,800 bicycles and 600 docking stations as well as exclusive offerings of reclining bikes, hand tricycles, and cargo bikes, targeted towards people with disabilities and providing riders with options besides a standard two-wheeled bike. 
+
+Currently, Cyclistic has been expanding their market reach from looking into attracting new users to consider converting the casual users into annual members. One way to facilitate this broadening of customer segment would be to introduce flexible pricing plans with: single-ride passes, full-day passes, and annual memberships. However, in order to maximise the number of annual users it requires, it would need current casual users to sign on for the annual membership in order to qualify as Cyclistic members.
+
+## Scenario
+
+The marketing and financial analyst team have commented that as annual members of Cyclistic tend to generate more profits than casual users and hence have decided to focus their marketing strategy on converting casual users to annual members so as to maximise the number of annual members in Cyclistic. The marketing programme will be considering the following: analysing the differences between casual and annual members, understanding what exactly are some traits that encourage annual membership among the annual users and finally, to consider how digital media can be used to convince conversion of casual users into annual members.
+
+## Problem Statement
+
+As a junior data analyst, I will be using the Divvy dataset (https://divvy-tripdata.s3.amazonaws.com/index.html) to generate insights  to analyse the differences between casual and annual members of Cyclistic users.
+
+The following statement and task will be analysed using the framework of Ask, Prepare, Process, Analyze, Share and Act. I will be using R Studio programme to conduct the entire data analysis. 
+
+## Data Management
+
+The dataset features historical trip data for the last 12 months, featuring the start station time, end station time as well as longitudes and latitudes of the destination and starting station. 
+
+The dataset shows no form of bias or issue of credibility since the data had been stored internally and this is also known as a first party data that ensures data integrity, since the data was directly from Cyclistic themselves. Furthermore, there seems to be no privacy or accessibility issue as this dataset was made public and made in a way that it is easy to use and manage. 
+
+
+## Data Cleaning in R 
+***
+
+```{r message=FALSE}
+options(repos='http //cran.rstudio.com/')
+```
+
+### STEP 1: Installation of Required Packages in R
+```{r eval =FALSE}
+install.packages("tidyverse") #For Data wrangling
+install.packages("lubridate") #For Data wrangling attributes
+install.packages("ggplot2") #For Data visualisations 
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+```
+
+```{r echo=FALSE,message=FALSE}
+install.packages("tidyverse") #For Data wrangling
+install.packages("lubridate") #For Data wrangling attributes
+install.packages("ggplot2") #For Data visualisations 
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+```
+###STEP 2: Importing and loading the dataset
+
+```{r}
+getwd()  #Set working directory 
+#Read past 12 months trip database csv files 
+Jul_20 <- read_csv("202007-divvy-tripdata.csv")
+Aug_20 <- read_csv("202008-divvy-tripdata.csv")
+Sep_20 <- read_csv("202009-divvy-tripdata.csv")
+Oct_20 <- read_csv("202010-divvy-tripdata.csv")
+Nov_20 <- read_csv("202011-divvy-tripdata.csv")
+Dec_20 <- read_csv("202012-divvy-tripdata.csv")
+Jan_21 <- read_csv("202101-divvy-tripdata.csv")
+Feb_21 <- read_csv("202102-divvy-tripdata.csv")
+Mar_21 <- read_csv("202103-divvy-tripdata.csv")
+Apr_21 <- read_csv("202104-divvy-tripdata.csv")
+May_21 <- read_csv("202105-divvy-tripdata.csv")
+Jun_21 <- read_csv("202106-divvy-tripdata.csv")
+```
+* Do not need to use setwd() function as current working directory acceptable. 
+* Note that setwd() function only works for desktop version of RStudio
+
+### STEP 3:Merge csv files into single file by checking column names
+
+```{r}
+colnames(Jul_20)
+colnames(Aug_20)
+colnames(Sep_20)
+colnames(Oct_20)
+colnames(Nov_20)
+colnames(Dec_20)
+colnames(Jan_21)
+colnames(Feb_21)
+colnames(Mar_21)
+colnames(Apr_21)
+colnames(May_21)
+colnames(Jun_21)
+
+str(Jul_20)
+str(Aug_20)
+str(Sep_20)
+str(Oct_20)
+str(Nov_20)
+str(Dec_20)
+str(Jan_21)
+str(Feb_21)
+str(Mar_21)
+str(Apr_21)
+str(May_21)
+str(Jun_21)
+```
+
+### STEP 4:Verify if the same data type for all the spreadsheets before merging
+
+```{r}
+typeof(Sep_20)
+typeof(Oct_20)
+typeof(Nov_20)
+typeof(Dec_20)
+typeof(Jan_21)
+typeof(Feb_21)
+typeof(Mar_21)
+typeof(Apr_21)
+typeof(May_21)
+typeof(Jun_21)
+```
+* Checking the data type will ensure that there is a uniform data type for all of the data files so that it can eventually be merged into one
+
+### STEP 5: Make consistent data types for the columns in each dataset
+
+```{r}
+Jul_20 <- mutate(Jul_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Aug_20 <- mutate(Aug_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Sep_20 <- mutate(Sep_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Oct_20 <- mutate(Oct_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Nov_20 <- mutate(Nov_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Dec_20 <- mutate(Dec_20,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Jan_21 <- mutate(Jan_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Feb_21 <- mutate(Feb_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Mar_21 <- mutate(Mar_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Apr_21 <- mutate(Apr_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+May_21 <- mutate(May_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+Jun_21 <- mutate(Jun_21,ride_id = as.character(ride_id),rideable_type = as.character(rideable_type),start_station_id = as.double(start_station_id), end_station_id = as.double(end_station_id))
+
+```
+
+### STEP 6: Combine the datasets into one type
+
+```{r}
+trips_data <- bind_rows(Jul_20,Sep_20,Oct_20,Nov_20,Dec_20,Jan_21,Feb_21,Mar_21,Apr_21,May_21,Jun_21)
+```
+
+### STEP 7: Removal of unnecassary columns from data frame
+
+```{r} 
+trips_data <- trips_data %>%
+  select(-c(start_lat,start_lng,end_lat,end_lng))
+```
+
+### STEP 8: Data inspection and Data insights management 
+
+```{r} 
+
+colnames(trips_data)
+nrow(trips_data)
+dim(trips_data)
+head(trips_data)
+str(trips_data)
+summary(trips_data)
+
+```
+* Based on the summary given, it can be noted that the following changes would need to be made to generate more insights
+  +  Separate out the date and time into separate components to find ride_length and duration over time
+
+### STEP 9: Separate out date and time in months, days and year for clearer identification 
+
+```{r} 
+trips_data$date <- as.Date(trips_data$started_at) #Formats data into yyyy-mm-dd
+trips_data$month <- format(as.Date(trips_data$date),"%m")
+trips_data$day <- format(as.Date(trips_data$date),"%d")
+trips_data$year <- format(as.Date(trips_data$date),"%Y")
+trips_data$day_of_wk <- format(as.Date(trips_data$date),"%A")
+```
+
+### STEP 10:  Calculating trip duration per trip 
+
+```{r} 
+trips_data$ride_length <- difftime(trips_data$ended_at, trips_data$started_at)
+```
+
+### STEP 11: Rmeoving irrelevant data 
+* Make new version of data in case require it for future 
+
+```{r}
+is.factor(trips_data$ride_length)
+trips_data$ride_length <- as.numeric(as.character(trips_data$ride_length))
+is.numeric(trips_data$ride_length)
+trips_data_v2 <- trips_data[!(trips_data$start_station_name == "HQ QR" | trips_data$ride_length<0),] 
+```
+
+## Data Analysis
+***
+> At this junture, the data has been cleaned and we can begin our analysis.Based on the ride_length and the number of trips taken, this can allow for a stronger comparison between member users and casual users 
+
+### STEP 12: Descriptive analysis on the ride_length (measured in seconds)
+ 
+```{r}
+summary(trips_data_v2$ride_length)
+```
+
+### STEP 13: Comparison of Members and casual users (measured in seconds)
+
+```{r}
+aggregate(trips_data_v2$ride_length ~ trips_data_v2$member_casual, FUN = mean)
+aggregate(trips_data_v2$ride_length ~ trips_data_v2$member_casual, FUN = median)
+aggregate(trips_data_v2$ride_length ~ trips_data_v2$member_casual, FUN = max)
+aggregate(trips_data_v2$ride_length ~ trips_data_v2$member_casual, FUN = min)
+```
+
+### STEP 14: Average ride time by each day for members vs casual users (measured in seconds)
+
+```{r}
+trips_data_v2$day_of_wk <- ordered(trips_data_v2$day_of_wk, levels=c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"))
+aggregate(trips_data_v2$ride_length ~ trips_data_v2$member_casual + trips_data_v2$day_of_wk, FUN = mean)
+```
+
+### STEP 15: Analyse the riders data by type and weekdays (measured in seconds)
+
+```{r eval = FALSE}
+trips_data_v2 %>%
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual,weekday) %>%
+  summarise(number_of_rides =n(),average_duration = mean(ride_length)) %>%
+  arrange(member_casual,weekday)
+```
+
+* From the table presented, we can observe significangt differences between casual users and member users. Interestingly, the average duration by casual users is much higher based on the tibble than from member users
+* Certainly, more data visualisation is needed to observe these differences more aptly and accurately
+
+### STEP 16: Visualisation of number of rides by members and casual 
+
+```{r eval = FALSE}
+trips_data_v2 %>%
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual,weekday) %>%
+  summarise(number_of_rides =n(),average_duration = mean(ride_length)) %>%
+  arrange(member_casual,weekday) %>%
+  ggplot(aes(x=weekday, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Number of Rides For Members & Casual (per Weekday)")
+```
+
+```{r echo=FALSE}
+trips_data_v2 %>%
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual,weekday) %>%
+  summarise(number_of_rides =n(),average_duration = mean(ride_length)) %>%
+  arrange(member_casual,weekday) %>%
+  ggplot(aes(x=weekday, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Number of Rides For Members & Casual (per Weekday)")
+```
+
+
+### STEP 17: Visualisation of average duration of rides by different member types
+
+```{r eval = FALSE}
+trips_data_v2 %>%
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual,weekday) %>%
+  summarise(number_of_rides =n(),average_duration = mean(ride_length)) %>%
+  arrange(member_casual,weekday) %>%
+  ggplot(aes(x=weekday, y = average_duration, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Average Ride Duration For Members & Casual (per Weekday)")
+```
+
+```{r echo=FALSE}
+trips_data_v2 %>%
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual,weekday) %>%
+  summarise(number_of_rides =n(),average_duration = mean(ride_length)) %>%
+  arrange(member_casual,weekday) %>%
+  ggplot(aes(x=weekday, y = average_duration, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Average Ride Duration For Members & Casual (per Weekday)")
+```
+
+### STEP 18: Visualisation of nunmber of rides in each ride type by different member types
+
+```{r eval = FALSE}
+trips_data_v2 %>%
+  group_by(member_casual,rideable_type) %>%
+  summarise(number_of_rides =n()) %>%
+  arrange(member_casual) %>%
+  ggplot(aes(x= rideable_type, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Number of Ride Types For Members & Casual")
+```
+
+```{r echo=FALSE}
+trips_data_v2 %>%
+  group_by(member_casual,rideable_type) %>%
+  summarise(number_of_rides =n()) %>%
+  arrange(member_casual) %>%
+  ggplot(aes(x= rideable_type, y = number_of_rides, fill = member_casual)) + 
+  geom_col(position = "dodge") + 
+  labs(title = "Comparison of Number of Ride Types For Members & Casual")
+```
+## Data Reporting 
+
+### STEP 19: Saving the work for future references 
+
+```{r}
+write.csv(trips_data_v2,'trips_compileddata_caa_300721.csv')
+```
+
+## Data Analysis Insights
+
+* Overall, members tend to take the largest number of rides as opposed to casual users
+* The average ride duration seems to be significantly higher in casual users than among member users
+* Interestingly, weekends tend to have the highest number of casual users of Cyclistic bikes
+* While member users tend to prefer classic bikes the most, it seems unanimous that both member users and causal users like to use docked bikes the most
+
+## Possible Solutions 
+
+* Since the marketing and financial team beleive that there is more profitability for users they can consider doing the following in order to convert casual users to long term members
+  + Offer discounts and voucher codes for weekend travels for members exclusive only so that it would motivate them to sign up more for the memberships to take advantage of the offers 
+  + Could offer discounts and vouchers based on duration travelled to increase chances of joining membership 
+  + Introduce new perks that only members can enjoy such as #freeridesonweekends to attract more consumers 
+  + Manage and track status of members to accord them to accumulate points to win awards and score points for achievements 
+
+## Future Consideration
+
+* There is plenty of data that can be used further to draw these parallels more accurately. For example, the latitude and longitude datapoints that are being given in the dataset could actually have been used for map visualisations to as to study the differences between casual users and member users more accurately 
+
+## Further Expansion into Data Insights generated
+
+* What types of services members enjoy that casual members to not? 
+* What are some of the uses of the facilities and reasons given (Application of textual analysis can help to narrow down some key words in generating usage figures. For example, if #bicycleday was trending, it could mean that there was a surge in demand for such bicycle uses and hence could have explained why there is a hike such uses)
+
